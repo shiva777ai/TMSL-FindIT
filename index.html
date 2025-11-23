@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TMSL FindIt — Polished Local Prototype</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- app styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-wrap">
+    <!-- LOGIN -->
+    <div id="loginView" class="login-screen" style="display:none">
+      <div class="login-card card" role="dialog" aria-modal="true" aria-label="Login to TMSL FindIt">
+        <div class="login-header">
+          <img src="logo.jpg" alt="logo" class="logo-img" onerror="this.style.display='none'">
+          <div>
+            <div class="brand-title">TMSL FindIt</div>
+            <div class="brand-sub">Campus lost &amp; found — local prototype</div>
+            <div class="brand-pill">
+              <span class="pill-dot" aria-hidden="true"></span>
+              Team Tango Charlie
+            </div>
+          </div>
+        </div>
+
+        <div class="login-grid">
+          <input id="loginId" placeholder="Your ID (e.g., roll number)" type="text" autocomplete="username" />
+          <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" />
+          <div class="row-actions">
+            <button id="loginBtn" class="btn btn-primary">Sign in</button>
+            <button id="registerBtn" class="btn btn-ghost">Create account</button>
+            <button id="changePassBtn" class="btn btn-ghost" title="Change stored password">Change password</button>
+          </div>
+          <div class="login-note">This website is for the students who have lost or found stuff in the college campus.</div>
+          <div class="cred-warning">Warning: Try to not forget your UserID and Password.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="card" style="display:none">
+      <header class="app-header">
+        <div class="brand-left">
+          <img src="logo.jpg" alt="logo" onerror="this.style.display='none'">
+          <div class="brand-text">
+            <div class="title">TMSL FindIt</div>
+            <div class="sub">Find Faster. Stress Less • <span id="collegeName">Techno Main Salt Lake</span></div>
+          </div>
+        </div>
+
+        <div class="header-stats">
+          <div class="stat-pill" id="totalCount">Items: 0</div>
+          <div class="stat-pill" id="lostCount">Lost: 0</div>
+          <div class="stat-pill" id="foundCount">Found: 0</div>
+          <div class="stat-pill" id="openCount">Open: 0</div>
+        </div>
+
+        <div class="top-right">
+          <div class="small-muted" id="welcomeText"></div>
+          <button id="logout" class="btn btn-ghost">Logout</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <!-- Left: list -->
+        <section>
+          <div class="controls">
+            <div class="search-box" role="search" aria-label="Search items">
+              <span>🔍</span>
+              <input id="searchInput" placeholder="Search title, location, notes, poster" aria-label="Search items">
+            </div>
+
+            <select id="filterSelect" class="control" aria-label="Filter category">
+              <option value="all">All categories</option>
+              <option value="id-card">ID Cards</option>
+              <option value="electronics">Electronics</option>
+              <option value="books">Books</option>
+              <option value="accessories">Accessories</option>
+              <option value="others">Others</option>
+            </select>
+
+            <select id="statusSelect" class="control" aria-label="Filter status">
+              <option value="all">Status: All</option>
+              <option value="open">Open</option>
+              <option value="claimed">Claimed</option>
+              <option value="returned">Returned</option>
+            </select>
+
+            <select id="sortSelect" class="control" aria-label="Sort items">
+              <option value="newest">Sort: Newest</option>
+              <option value="oldest">Sort: Oldest</option>
+            </select>
+
+            <div class="tabs" role="tablist" aria-label="Lost or found">
+              <button class="tab active" data-mode="lost" role="tab" aria-selected="true">Lost</button>
+              <button class="tab" data-mode="found" role="tab" aria-selected="false">Found</button>
+            </div>
+          </div>
+
+          <div id="list" class="list" aria-live="polite"></div>
+        </section>
+
+        <!-- Right: form -->
+        <aside class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <h2 id="postTitle">Post Lost / Found</h2>
+              <div class="muted-contrast" style="font-size:13px">Share quick details — image optional.</div>
+            </div>
+            <div class="lock-toggle" style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;color:var(--muted)">Lock poster</label>
+              <input id="lockPostedBy" type="checkbox" title="Lock postedBy to your ID" />
+            </div>
+          </div>
+
+          <form id="itemForm" autocomplete="off">
+            <div class="form-row">
+              <div class="label">Type</div>
+              <div style="display:flex;gap:12px">
+                <label style="padding:8px;background:transparent;border-radius:8px"><input type="radio" name="type" value="lost" checked> Lost</label>
+                <label style="padding:8px;background:transparent;border-radius:8px"><input type="radio" name="type" value="found"> Found</label>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="label">Item name *</label>
+              <input id="title" name="title" required placeholder="e.g., Black wallet"/>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div class="form-row">
+                <label class="label">Date</label>
+                <input id="date" name="date" type="date"/>
+              </div>
+              <div class="form-row">
+                <label class="label">Category</label>
+                <select id="category" name="category">
+                  <option value="others">Others</option>
+                  <option value="id-card">ID Card</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="books">Books</option>
+                  <option value="accessories">Accessories</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="label">Location</label>
+              <input id="location" name="location" placeholder="e.g., Canteen, Block A" />
+            </div>
+
+            <div class="form-row">
+              <label class="label">Notes</label>
+              <textarea id="notes" name="notes" placeholder="Color, initials, contents..."></textarea>
+            </div>
+
+            <div class="form-row">
+              <label class="label">Your name / contact (optional)</label>
+              <input id="postedBy" name="postedBy" placeholder="Name, phone or email" />
+            </div>
+
+            <div class="form-row">
+              <label class="label">Image (optional, &lt; 3MB)</label>
+              <input id="imageInput" name="image" type="file" accept="image/*" />
+              <img id="imgPreview" class="preview" style="display:none" alt="Item preview">
+              <div class="helper">Images are stored locally in browser.</div>
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+              <button class="btn btn-primary" type="submit">Post item</button>
+              <button id="clearLocal" type="button" class="btn btn-ghost">Clear local data</button>
+            </div>
+
+            <div id="formMsg" class="helper" style="margin-top:12px"></div>
+          </form>
+
+          <hr style="border:none;border-top:1px dashed rgba(255,255,255,0.04);margin:16px 0">
+
+          <div class="static-actions">
+            <button id="exportBtn" class="static-btn primary">💾 Export JSON</button>
+            <label class="static-btn" for="importFile">📂 Import JSON
+              <input id="importFile" class="import-file" type="file" accept="application/json" style="display:none"/>
+            </label>
+            <button id="seedDemo" class="static-btn">🌱 Seed demo</button>
+            <button id="clearLocal2" class="static-btn warn">⚠️ Clear all</button>
+          </div>
+
+          <div class="footer">
+            <div>Team: <strong id="teamName">Team Tango Charlie</strong></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANGE PASSWORD MODAL -->
+  <div id="changePassModal" class="modal-backdrop" style="display:none">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Change password">
+      <h3 style="margin:0 0 8px 0">Change stored password</h3>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">
+        <input id="oldPass" placeholder="Current password" type="password" style="width:100%;padding:10px;border-radius:8px">
+        <input id="newPass" placeholder="New password" type="password" style="width:100%;padding:10px;border-radius:8px">
+        <div style="display:flex;gap:10px">
+          <button id="doChangePass" class="btn btn-primary">Update</button>
+          <button id="closeChangePass" class="btn btn-ghost">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- app script -->
+  <script src="app.js" defer></script>
+</body>
+</html>
